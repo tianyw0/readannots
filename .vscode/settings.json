@@ -1,0 +1,6 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "workbench.editorAssociations": {
+    "*.pdf": "vscode.videoPreview"
+  }
+}

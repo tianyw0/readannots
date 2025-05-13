@@ -1,0 +1,8 @@
+venv/
+.venv/
+*.pdf
+__pycache__/
+.pdm-build/
+.pytest_cache/
+*.py[cod]
+*.so
