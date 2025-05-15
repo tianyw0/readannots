@@ -62,19 +62,18 @@ def extract_highlights(pdf_path, page_offset):
 
 # 将高亮标注转换为 Markdown 格式
 def export_to_markdown(highlights, pdf_path):
-    if highlights:
-        # 获取 PDF 文件的同名文件作为输出文件
-        output_file = os.path.splitext(pdf_path)[0] + ".annots.md"
-        try:
-            with open(output_file, "w") as f:
-                f.write("# Extracted Highlights\n\n")
-                for highlight in highlights:
-                    f.write(f"{highlight}\n\n")
-            logger.info(f"Highlights exported to {output_file}")
-        except Exception as e:
-            logger.error(f"Error writing markdown file: {e}")
-    else:
-        logger.info(f"No highlights found in {pdf_path}")
+    # 获取 PDF 文件的同名文件作为输出文件
+    output_file = os.path.splitext(pdf_path)[0] + ".annots.md"
+    try:
+        with open(output_file, "w") as f:
+            f.write("# Extracted Highlights\n\n")
+            if len(highlights) == 0:
+                f.write("\n\n")
+            for highlight in highlights:
+                f.write(f"{highlight}\n\n")
+        logger.info(f"Highlights exported to {output_file}")
+    except Exception as e:
+        logger.error(f"Error writing markdown file: {e}")
 
 
 # 监听文件变动的事件
