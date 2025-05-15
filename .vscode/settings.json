@@ -2,5 +2,8 @@
   "task.allowAutomaticTasks": "on",
   "workbench.editorAssociations": {
     "*.pdf": "vscode.videoPreview"
-  }
+  },
+  // 自动保存
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000
 }

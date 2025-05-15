@@ -46,7 +46,6 @@ This project is carried out using VS Code, `.vscode > tasks.json` has been confi
 The following parameters can be configured in `pyproject.toml`:
 
 - `page-offset`: page offset, default is 2
-- `max-depth`: directory depth, default is 3
 
 ## License
 
