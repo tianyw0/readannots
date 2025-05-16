@@ -9,6 +9,18 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
+def get_unique_filename(dst_dir, new_filename):
+    """生成唯一的文件名，如果存在重名则添加序号"""
+    base, ext = os.path.splitext(new_filename)
+    counter = 1
+    result_filename = new_filename
+    
+    while os.path.exists(os.path.join(dst_dir, result_filename)):
+        result_filename = f"{base}_{counter}{ext}"
+        counter += 1
+    
+    return result_filename
+
 def copy_pdf_to_reading(src_path):
     try:
         # 确保源文件存在且是 PDF
@@ -27,7 +39,9 @@ def copy_pdf_to_reading(src_path):
         dst_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src', 'reading')
         os.makedirs(dst_dir, exist_ok=True)
 
-        dst_path = os.path.join(dst_dir, new_filename)
+        # 获取唯一的文件名
+        unique_filename = get_unique_filename(dst_dir, new_filename)
+        dst_path = os.path.join(dst_dir, unique_filename)
 
         # 复制文件
         shutil.copy2(src_path, dst_path)
