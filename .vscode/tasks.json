@@ -5,7 +5,8 @@
       // vscode task to run pdm watch
       "label": "Watch PDF Changes",
       "type": "shell",
-      "command": "/Users/tianyw/Library/Python/3.13/bin/pdm watch",
+      // "command": "/Users/tianyw/Library/Python/3.13/bin/pdm watch",
+      "command": "./src/watch_pdfannots.sh",
       "isBackground": true,
       "runOptions": {
         "runOn": "folderOpen"
