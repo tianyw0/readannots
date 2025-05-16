@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PDF 阅读笔记可视化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-8">
+        <h1 id="title" class="text-2xl font-bold text-gray-800 pb-4 mb-6 border-b border-gray-200">
+            PDF高亮笔记
+        </h1>
+        <div id="highlights"></div>
+    </div>
+
+    <script>
+        // 用于存储已加载的高亮ID
+        let loadedHighlights = new Set();
+
+        function createHighlightElement(highlight, index) {
+            return `
+                <div class="relative pl-10 pr-4 py-4 mb-4 bg-amber-50 border-l-4 border-amber-300 rounded-r-lg" data-id="${index}">
+                    <span class="absolute left-3 text-gray-600 font-bold">${index + 1}.</span>
+                    <div class="text-gray-800 mb-2">${highlight.text}</div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">第 ${highlight.page} 页</span>
+                        ${highlight.prior_outline ? ` | <span class="text-blue-600">${highlight.prior_outline}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadHighlights() {
+            try {
+                const response = await fetch('分布式原理介绍.202505.pdfannots.json');
+                const highlights = await response.json();
+                
+                // 设置标题
+                const fileName = '分布式原理介绍.202505.pdfannots.json';
+                const title = fileName.split('.')[0];
+                document.getElementById('title').textContent = title;
+                
+                const container = document.getElementById('highlights');
+                const sortedHighlights = highlights.sort((a, b) => a.page - b.page);
+
+                // 找出新的高亮内容
+                const currentHighlightCount = loadedHighlights.size;
+                const newHighlights = sortedHighlights.slice(currentHighlightCount);
+
+                if (newHighlights.length > 0) {
+                    // 只追加新的高亮内容
+                    const newContent = newHighlights
+                        .map((h, i) => createHighlightElement(h, currentHighlightCount + i))
+                        .join('');
+                    
+                    container.insertAdjacentHTML('beforeend', newContent);
+
+                    // 更新已加载的高亮集合
+                    newHighlights.forEach((_, i) => {
+                        loadedHighlights.add(currentHighlightCount + i);
+                    });
+                }
+            } catch (err) {
+                console.error('加载高亮失败:', err);
+            }
+        }
+
+        // 初始加载
+        loadHighlights();
+
+        // 每5秒检查更新
+        setInterval(loadHighlights, 5000);
+    </script>
+</body>
+</html>

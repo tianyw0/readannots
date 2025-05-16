@@ -20,7 +20,7 @@ def copy_pdf_to_reading(src_path):
         # 构造目标路径
         filename = os.path.basename(src_path)
         name_without_ext = os.path.splitext(filename)[0]
-        timestamp = time.strftime('%Y%m%d_%H%M%S')
+        timestamp = time.strftime('%Y%m')
         new_filename = f"{name_without_ext}.{timestamp}.pdf"
 
         # 确保目标目录存在
