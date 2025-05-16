@@ -1,10 +1,10 @@
-# readannots <sup><em>for PDF</em></sup>
+# readannots <sup><em>for PDF</em></sup> base on <em>pdfannots</em>
 
 [![pdm-managed](https://img.shields.io/endpoint?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fpdm-project%2F.github%2Fbadge.json)](https://pdm-project.org)
 
 A simple Python tool for extracting and managing highlighting markdown from PDF files. Supports <strong>automatic monitoring</strong> of PDF file highlight annotations, and real-time export of highlighted content to Markdown files.
 
-![](./docs/readannots.png)
+![](./docs/assets/readannots.png)
 
 ## Features
 
