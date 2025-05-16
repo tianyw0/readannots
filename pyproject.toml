@@ -8,6 +8,7 @@ dependencies = [
     "pdfannots>=0.5",
     "markdown>=3.8",
     "watchdog>=6.0.0",
+    "pdfminer-six>=20250506",
 ]
 requires-python = ">=3.13"
 readme = "README.md"
@@ -22,5 +23,5 @@ build-backend = "pdm.backend"
 distribution = true
 
 [tool.pdm.scripts]
-watch = "python src/watcher.py --page-offset 2"
+watch = "python src/watcher.py --line-height 0.1"
 read = "python src/read.py"

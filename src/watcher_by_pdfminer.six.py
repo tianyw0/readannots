@@ -14,7 +14,7 @@ logger = logging.getLogger()
 
 
 # 提取 PDF 中的高亮标注
-def extract_highlights(pdf_path, page_offset):
+def extract_highlights(pdf_path, line_height):
     highlights = []
     try:
         doc = fitz.open(pdf_path)
@@ -42,11 +42,20 @@ def extract_highlights(pdf_path, page_offset):
 
                 highlight_text = ""
                 for quad in quads:
+                    # 根据行高调整文本框的高度
+                    height = quad.rect.height * line_height
+                    y_adjustment = (height - quad.rect.height) / 2
                     expanded_rect = fitz.Rect(
                         round(quad.rect.x0, 3) + 0.1,
-                        round(quad.rect.y0 + 1, 3),
+                        round(quad.rect.y0 - y_adjustment, 3),
                         round(quad.rect.x1, 3) - 0.1,
-                        round(quad.rect.y1 - 1, 3),
+                        round(quad.rect.y1 + y_adjustment, 3),
+                    )
+                    # 输出原始高度和调整后的高度
+                    logger.info(
+                        f"高亮区域高度 - 原始: {quad.rect.height:.2f}, "
+                        f"调整后: {height:.2f}, "
+                        f"调整量: {y_adjustment:.2f}"
                     )
                     highlight_text += page.get_textbox(expanded_rect)
 
@@ -80,14 +89,19 @@ def export_to_markdown(highlights, pdf_path):
 
 # 监听文件变动的事件
 class PDFEventHandler(FileSystemEventHandler):
-    def __init__(self, page_offset):
-        self.page_offset = page_offset
+    def __init__(self, line_height=1.5):
+        self.line_height = line_height
 
     def on_modified(self, event):
-        if event.src_path.endswith(".pdf"):
-            logger.info(f"Detected change in {event.src_path}")
-            highlights = extract_highlights(event.src_path, self.page_offset)
-            export_to_markdown(highlights, event.src_path)
+        if not event.is_directory and event.src_path.endswith(".pdf"):
+            try:
+                highlights = extract_highlights(
+                    event.src_path, self.line_height
+                )  # Pass line_height instead of page_offset
+                if highlights:
+                    export_to_markdown(highlights, event.src_path)
+            except Exception as e:
+                logger.error(f"Error extracting highlights from {event.src_path}: {e}")
 
 
 # 设置监听的目录
@@ -103,14 +117,25 @@ def main():
 
     os.makedirs(watch_directory, exist_ok=True)
 
-    event_handler = PDFEventHandler(page_offset=3)  # 设置默认偏移量为3
+    parser = argparse.ArgumentParser(
+        description="Watch PDF files for changes and extract highlights"
+    )
+    parser.add_argument(
+        "--line-height",
+        type=float,
+        default=1.5,
+        help="Line height multiplier for text extraction",
+    )
+    args = parser.parse_args()
+
+    event_handler = PDFEventHandler(line_height=args.line_height)
     observer = Observer()
-    observer.schedule(event_handler, watch_directory, recursive=True)
+    observer.schedule(event_handler, ".", recursive=True)
 
     logger.info(f"Listening for changes in {watch_directory}...")
 
     try:
-        observer.start()
+        observer.start()  # Start the observer only once
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
