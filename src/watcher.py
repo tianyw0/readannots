@@ -51,9 +51,7 @@ def extract_highlights(pdf_path, page_offset):
                     highlight_text += page.get_textbox(expanded_rect)
 
                 if highlight_text:
-                    highlights.append(
-                        f"{highlight_text}(Page {page_num - page_offset})"
-                    )
+                    highlights.append(f"{highlight_text}")
 
     except Exception as e:
         logger.error(f"Error extracting highlights from {pdf_path}: {e}")
@@ -66,11 +64,15 @@ def export_to_markdown(highlights, pdf_path):
     output_file = os.path.splitext(pdf_path)[0] + ".annots.md"
     try:
         with open(output_file, "w") as f:
-            f.write("# Extracted Highlights\n\n")
+            # 获取 PDF 文件的同名文件作为输出文件
+            output_file = os.path.splitext(pdf_path)[0] + ".annots.md"
+            # 获取 PDF 文件名（不含扩展名）作为标题
+            pdf_title = os.path.splitext(os.path.basename(pdf_path))[0]
+            f.write(f"# {pdf_title}\n\n")
             if len(highlights) == 0:
                 f.write("\n\n")
-            for highlight in highlights:
-                f.write(f"{highlight}\n\n")
+            for index, highlight in enumerate(highlights, 1):
+                f.write(f"{index}. {highlight}\n\n")
         logger.info(f"Highlights exported to {output_file}")
     except Exception as e:
         logger.error(f"Error writing markdown file: {e}")
